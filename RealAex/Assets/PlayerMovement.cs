@@ -10,6 +10,8 @@ public class PlayerMovement : MonoBehaviour
     public float maxjumps;
     float jumps;
     public float slide;
+    public bool isFacingRight;
+    public bool isFacingLeft;
 
     private bool canDash = true;
     private bool isDashing;
@@ -38,6 +40,16 @@ public class PlayerMovement : MonoBehaviour
         if(Mathf.Abs(horizontal) == 1)
         {
            rb.velocity = new Vector2(horizontal * moveSpeed, rb.velocity.y);
+           if(horizontal == 1)
+           {
+            isFacingRight = true;
+            isFacingLeft = false;
+           }
+           else if(horizontal == -1)
+           {
+            isFacingLeft = true;
+            isFacingRight = false;
+           }
         }
         else
         {
@@ -68,7 +80,14 @@ public class PlayerMovement : MonoBehaviour
         isDashing = true;
         float originalGravity = rb.gravityScale;
         rb.gravityScale = 0f;
-        rb.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
+        if(isFacingRight)
+        {
+            rb.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
+        }
+        else
+        {
+             rb.velocity = new Vector2(-transform.localScale.x * dashingPower, 0f);
+        }
         tr.emitting = true;
         yield return new WaitForSeconds(dashingTime);
         tr.emitting = false;
