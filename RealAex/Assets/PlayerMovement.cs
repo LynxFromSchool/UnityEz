@@ -9,6 +9,9 @@ public class PlayerMovement : MonoBehaviour
     public float JumpPower;
     public float maxjumps;
     float jumps;
+    public float slide;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,13 +26,17 @@ public class PlayerMovement : MonoBehaviour
         {
            rb.velocity = new Vector2(horizontal * moveSpeed, rb.velocity.y);
         }
+        else
+        {
+            rb.velocity = new Vector2(rb.velocity.x / slide, rb.velocity.y);
+        }
 
         if (Input.GetKeyDown(KeyCode.Space) && jumps != 0)
         {
             jumps -= 1;
             // this is so if you double jump the jump isnt small and its the same as the normal one
             rb.velocity = new Vector2(rb.velocity.x, 0);
-            rb.AddForce(Vector3.up * JumpPower);
+            rb.AddForce(Vector3.up * JumpPower * 100);
         }
 
     }
