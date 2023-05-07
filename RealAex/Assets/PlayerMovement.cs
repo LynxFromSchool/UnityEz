@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour
 {
     Rigidbody2D rb;
     public float moveSpeed;
+    public float JumpPower;
     // Start is called before the first frame update
     void Start()
     {
@@ -19,6 +20,11 @@ public class PlayerMovement : MonoBehaviour
         if(Mathf.Abs(horizontal) == 1)
         {
            rb.velocity = new Vector2(horizontal * moveSpeed, rb.velocity.y);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            rb.AddForce(Vector3.up * JumpPower);
         }
 
     }
