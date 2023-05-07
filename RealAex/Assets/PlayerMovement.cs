@@ -11,6 +11,14 @@ public class PlayerMovement : MonoBehaviour
     float jumps;
     public float slide;
 
+    private bool canDash = true;
+    private bool isDashing;
+    private float dashingPower = 24f;
+    private float dashingTime = 0.2f;
+    private float dashingCooldown = 1f;
+
+    [SerializeField] private TrailRenderer tr;
+
 
     // Start is called before the first frame update
     void Start()
@@ -21,6 +29,11 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (isDashing)
+        {
+            return;
+        }
+        //walking
         float horizontal = Input.GetAxisRaw("Horizontal");
         if(Mathf.Abs(horizontal) == 1)
         {
@@ -30,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.velocity = new Vector2(rb.velocity.x / slide, rb.velocity.y);
         }
-
+        //Jumping
         if (Input.GetKeyDown(KeyCode.Space) && jumps != 0)
         {
             jumps -= 1;
@@ -38,9 +51,30 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x, 0);
             rb.AddForce(Vector3.up * JumpPower * 100);
         }
+        //dashing
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
+        {
+            StartCoroutine(Dash());
+        }
 
     }
     private void OnCollisionEnter2D(Collision2D other) {
         jumps = maxjumps;
+    }
+
+    private IEnumerator Dash()
+    {
+        canDash = false;
+        isDashing = true;
+        float originalGravity = rb.gravityScale;
+        rb.gravityScale = 0f;
+        rb.velocity = new Vector2(transform.localScale.x * dashingPower, 0f);
+        tr.emitting = true;
+        yield return new WaitForSeconds(dashingTime);
+        tr.emitting = false;
+        rb.gravityScale = originalGravity;
+        isDashing = false;
+        yield return new WaitForSeconds(dashingCooldown);
+        canDash = true;
     }
 }
