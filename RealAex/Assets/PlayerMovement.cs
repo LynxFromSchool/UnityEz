@@ -31,6 +31,14 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(Input.GetKey(KeyCode.S))
+        {
+            rb.velocity = new Vector2(rb.velocity.x, -15);
+        }
+        if(Input.GetKeyUp(KeyCode.S))
+        {
+            rb.velocity = new Vector2(rb.velocity.x, -8);
+        }
         if (isDashing)
         {
             return;
@@ -56,12 +64,17 @@ public class PlayerMovement : MonoBehaviour
             rb.velocity = new Vector2(rb.velocity.x / slide, rb.velocity.y);
         }
         //Jumping
-        if (Input.GetKeyDown(KeyCode.Space) && jumps != 0)
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            jumps -= 1;
-            // this is so if you double jump the jump isnt small and its the same as the normal one
-            rb.velocity = new Vector2(rb.velocity.x, 0);
-            rb.AddForce(Vector3.up * JumpPower * 100);
+            if(jumps == 0)
+            {
+                StartCoroutine(jumpDelay());
+            }
+            else
+            {
+                Jump();
+            }
+
         }
         //dashing
         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash)
@@ -72,6 +85,13 @@ public class PlayerMovement : MonoBehaviour
     }
     private void OnCollisionEnter2D(Collision2D other) {
         jumps = maxjumps;
+    }
+    private void Jump()
+    {
+        jumps -= 1;
+        // this is so if you double jump the jump isnt small and its the same as the normal one
+        rb.velocity = new Vector2(rb.velocity.x, 0);
+        rb.AddForce(Vector3.up * JumpPower * 100);
     }
 
     private IEnumerator Dash()
@@ -95,5 +115,14 @@ public class PlayerMovement : MonoBehaviour
         isDashing = false;
         yield return new WaitForSeconds(dashingCooldown);
         canDash = true;
+    }
+    private IEnumerator jumpDelay()
+    {
+        // this is so if you have no jumps and u click jump, if in the next 0.12 seconds you get your jumps it jumps for
+        yield return new WaitForSeconds(0.12f);
+        if(jumps != 0)
+        {
+            Jump();
+        }
     }
 }
